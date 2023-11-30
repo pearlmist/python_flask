@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор параллелограмов</title>
+</head>
+<body>
+
+<form method="post">
+    <img src="/static/images/параллелограм.png"><br>
+    <label>
+        Входные данные:<br>
+        <input type="radio" name="input_type" value="first" {% if input_type == 'first' %}checked{% endif %}> Сторона A, высота к стороне B, меньший угол<br>
+        <input type="radio" name="input_type" value="second" {% if input_type == 'second' %}checked{% endif %}> Сторона A, сторона B, высота<br>
+    </label>
+    <br>
+    <input name='show' type="submit" value="Показать">
+    <br>
+    <br>
+
+    {% if input_type == 'first' %}
+        <label>Сторона A: <input type="text" name="side_a" value="{{ side_a }}"></label>
+        <label>Высота к стороне B: <input type="text" name="height_b" value="{{ height_b }}"></label>
+        <label>Меньший угол: <input type="text" name="angle" value="{{ angle }}"></label>
+    {% elif input_type == 'second' %}
+        <label>Сторона A: <input type="text" name="side_a" value="{{ side_a }}"></label>
+        <label>Сторона B: <input type="text" name="side_b" value="{{ side_b }}"></label>
+        <label>Высота: <input type="text" name="height" value="{{ height }}"></label>
+    {% endif %}
+    <br>
+    {% if input_type %}
+    <p>
+        Выберите вычисления:<br>
+        {% for i in range(calculation_list|length) %}
+        <input type="checkbox" name="calc[]" value="{{i}}" {% if calculation_list[i] in calc_select %}checked{% endif %}>
+        {{calculation_list[i]}}<br>
+        {% endfor %}
+    </p>
+    <br>
+    {% endif %}
+    <p>
+        <input name=submit type="submit" value="Вычислить">
+        <input name=clean onclick="history.back()" type=submit value="Очистить"/>
+    </p>
+</form>
+
+{% if request.method == 'POST' and request.form.get('submit')%}
+    {% if side_a <= 0 %}
+    <p>Неверно введена сторона А!</p>
+    {% elif input_type == 'first' and height_b <= 0%}
+    <p>Неверно введена высота к стороне B!</p>
+    {% elif input_type == 'first' and angle <= 0%}
+    <p>Неверно введен меньший угол!</p>
+    {% elif input_type == 'second' and side_b <= 0%}
+    <p>Неверно введена сторона B!</p>
+    {% elif input_type == 'second' and height <= 0%}
+    <p>Неверно введена высота!</p>
+    {% else %}
+    <p>Результаты:</p>
+    {% if input_type == 'first' %}
+        <p>Сторона A: {{ side_a }}</p>
+        <p>Высота к стороне B: {{ height_b }}</p>
+        <p>Меньший угол: {{ angle }}</p>
+    {% elif input_type == 'second' %}
+        <p>Сторона A: {{ side_a }}</p>
+        <p>Сторона B: {{ side_b }}</p>
+        <p>Высота: {{ height }}</p>
+    {% endif %}
+    {% for key,value in result.items() %}
+        <p>{{key}}: {{value}}</p>
+    {% endfor %}
+    {% endif %}
+{% endif %}
+
+</body>
+</html>

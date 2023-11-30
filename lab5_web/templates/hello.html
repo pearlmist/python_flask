@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title> Приветствие </title>
+</head>
+<body>
+    <form action="{{ url_for('hello') }}" method="post">
+        <p>Имя: <input type="text" name="username" value="{{ name }}"></p>
+        <p>Пол:<br>
+            <input type="radio" name="gender" value="w" {% if gender == 'w' %}checked{% endif %}> Ж <br>
+            <input type="radio" name="gender" value="m" {% if gender == 'm' %}checked{% endif %}> M
+        </p>
+        <p>
+            Образовательная программа:
+            <select name="program">
+                {% for i in range(len(program_list)) %}
+                    <option value="{{i}}" {% if program_list[i] == program %}selected{% endif %}>{{program_list[i]}}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            Выберите дисциплины, которые Вы изучаете:<br>
+            {% for i in range(len(subject_list)) %}
+            <input type="checkbox" name="subject[]" value="{{i}}" {% if subject_list[i] in subjects_select %}checked{% endif %}>
+            {{subject_list[i]}}<br>
+            {% endfor %}
+
+        </p>
+        <p><input name=submit type="submit" value="Отправить"> <input name=clean onclick="history.back()" type=submit value="Очистить"/></p>
+    </form>
+
+    {% if request.method == 'POST' and name == "" and request.form.get('submit') %}
+        <p>Введите имя, пожалуйста!</p>
+    {% endif %}
+
+    {% if name != "" %}
+        <p>
+            Привет,
+            {% if gender == "m" %}
+                студент
+            {% elif gender == "w" %}
+                студентка
+            {% endif %}
+            {{ name }}!
+        </p>
+        <p>
+            Ваша образовательная программа: {{ program }}.
+        </p>
+        <p>
+            {% if subjects_select %}
+                Вы изучаете дисциплины:
+                {% for sub in subjects_select %}
+                    <a href="{{ url_for('subject', sub=sub) }}">{{ sub }}</a>{% if not loop.last %}, {% endif %}{% endfor %}.
+            {% else %}
+                Вы не изучаете никаких дисциплин.
+            {% endif %}
+        </p>
+    {% endif %}
+</body>
+</html>
